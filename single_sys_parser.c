@@ -222,6 +222,7 @@ int main(int argc, char** argv) {
     MYSQL_RES* result, *result2;
     MYSQL_ROW row, row2;
     char ch;
+    int port;
     port =3306;
 
 
