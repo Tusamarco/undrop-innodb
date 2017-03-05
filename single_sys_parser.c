@@ -223,7 +223,7 @@ int main(int argc, char** argv) {
     MYSQL_ROW row, row2;
     char ch;
     int port;
-    port =3306;
+    
 
 
     unsigned long long int table_id;
@@ -236,6 +236,7 @@ int main(int argc, char** argv) {
     getlogin_r(user, sizeof(user));
     strcpy(passwd, "");
     strcpy(db, "test");
+    port =3306;
 
     while ((ch = getopt(argc, argv, "h:u:p:d:g:P")) != -1) {
         switch(ch){
@@ -255,6 +256,7 @@ int main(int argc, char** argv) {
     }
     /* Connect to MySQL*/
     mysql_init(&link);
+    fprintf(stderr,"Info: host %s port %d\n", host,port);
     if (NULL == mysql_real_connect(&link, host, user, passwd, db, port, NULL, 0)) {
         fprintf(stderr,"Error: %s\n", mysql_error(&link));
         exit(EXIT_FAILURE);
