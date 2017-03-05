@@ -182,7 +182,7 @@ int fix_unsigned(int type, int is_unsign) {
 }
 
 void usage(char* prg){
-    fprintf(stderr, "%s [-h <host>] [-u <user>] [-p <passowrd>] [-d <db>] databases/table\n", prg);    
+    fprintf(stderr, "%s [-h <host>] [-u <user>]  [-P <port>] [-p <passowrd>] [-d <db>] databases/table\n", prg);    
 }
 
 void print_type(unsigned long mtype, unsigned long prtype, unsigned long len){
@@ -222,6 +222,7 @@ int main(int argc, char** argv) {
     MYSQL_RES* result, *result2;
     MYSQL_ROW row, row2;
     char ch;
+    port =3306;
 
 
     unsigned long long int table_id;
@@ -242,6 +243,7 @@ int main(int argc, char** argv) {
             case 'p': strncpy(passwd, optarg, sizeof(passwd)); break;
             case 'd': strncpy(db, optarg, sizeof(db)); break;
             case 'g': debug=1; break;
+            case 'P': port = atoi(optarg); break;    
             default : usage(basename(argv[0])); exit(EXIT_FAILURE);
         }
     }
@@ -252,7 +254,7 @@ int main(int argc, char** argv) {
     }
     /* Connect to MySQL*/
     mysql_init(&link);
-    if (NULL == mysql_real_connect(&link, host, user, passwd, db, 0, NULL, 0)) {
+    if (NULL == mysql_real_connect(&link, host, user, passwd, db, port, NULL, 0)) {
         fprintf(stderr,"Error: %s\n", mysql_error(&link));
         exit(EXIT_FAILURE);
     }

@@ -442,8 +442,9 @@ done
 
                 DEFINITIONFILE="${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/table_defs.${schema}.${TABLEDEFINITIONNAME}.sql"
                 #echo $DEFINITIONFILE
-    
-                `mysqldump $CONNECTIONPAR -n -d -N -y $SCHEMA_RECOVERY $TABLENAME_SQL |egrep -i  -v -e "(drop|/|-|warning)" > $DEFINITIONFILE `
+                echo "$EXECDIR/single_sys_parser $CONNECTIONPAR_C -d DRDICTIONARY -r 1 '$SCHEMA_RECOVERY/$TABLENAME_SQL'"
+                `$EXECDIR/single_sys_parser $CONNECTIONPAR_C -d DRDICTIONARY -r 1 '$SCHEMA_RECOVERY/$TABLENAME_SQL' 1> $DEFINITIONFILE`;
+                #`mysqldump $CONNECTIONPAR -n -d -N -y $SCHEMA_RECOVERY $TABLENAME_SQL |egrep -i  -v -e "(drop|/|-|warning)" > $DEFINITIONFILE `
                 #$EXECDIR/create_defs.pl $CONNECTIONPAR --db=$schema --table=$TABLEDEFINITIONNAME > $DEFINITIONFILE
                 
                 if [ $PARTITIONINDEX -gt 0 ]
