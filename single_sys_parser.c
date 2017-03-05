@@ -236,16 +236,16 @@ int main(int argc, char** argv) {
     getlogin_r(user, sizeof(user));
     strcpy(passwd, "");
     strcpy(db, "test");
-    port =3306;
+    port=3306;
 
-    while ((ch = getopt(argc, argv, "h:u:p:d:g:P")) != -1) {
+    while ((ch = getopt(argc, argv, "h:u:p:d:g:P:")) != -1) {
         switch(ch){
             case 'h': strncpy(host, optarg, sizeof(host)); break;
             case 'u': strncpy(user, optarg, sizeof(user)); break;
             case 'p': strncpy(passwd, optarg, sizeof(passwd)); break;
             case 'd': strncpy(db, optarg, sizeof(db)); break;
             case 'g': debug=1; break;
-            case 'P': port = atoi(optarg); break;    
+            case 'P': port=atoi(optarg); break;    
             default : usage(basename(argv[0])); exit(EXIT_FAILURE);
         }
     }
@@ -256,8 +256,8 @@ int main(int argc, char** argv) {
     }
     /* Connect to MySQL*/
     mysql_init(&link);
-    fprintf(stderr,"Info: host %s port %d\n", host,port);
-    if (NULL == mysql_real_connect(&link, host, user, passwd, db, port, NULL, 0)) {
+    /*fprintf(stderr,"Info: host %s port %d\n", host,port);*/
+    if (NULL == mysql_real_connect(&link, host, user, passwd, db, 0, NULL, 0)) {
         fprintf(stderr,"Error: %s\n", mysql_error(&link));
         exit(EXIT_FAILURE);
     }
