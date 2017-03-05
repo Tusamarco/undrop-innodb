@@ -237,7 +237,7 @@ int main(int argc, char** argv) {
     strcpy(passwd, "");
     strcpy(db, "test");
 
-    while ((ch = getopt(argc, argv, "h:u:p:d:g")) != -1) {
+    while ((ch = getopt(argc, argv, "h:u:p:d:g:P")) != -1) {
         switch(ch){
             case 'h': strncpy(host, optarg, sizeof(host)); break;
             case 'u': strncpy(user, optarg, sizeof(user)); break;
