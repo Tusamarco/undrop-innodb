@@ -1,6 +1,6 @@
-OBJECTS = stream_parser.o c_parser.o sys_parser.o
-TARGETS = stream_parser c_parser innochecksum_changer sys_parser
-SRCS = stream_parser.c include/mysql_def.h c_parser.c sys_parser
+OBJECTS = stream_parser.o c_parser.o sys_parser.o single_sys_parser.o
+TARGETS = stream_parser c_parser innochecksum_changer sys_parser single_sys_parser
+SRCS = stream_parser.c include/mysql_def.h c_parser.c sys_parser.c single_sys_parser.c
 INC_PATH = -I./include
 LIBS = -pthread -lm
 BINDIR = ./bin
