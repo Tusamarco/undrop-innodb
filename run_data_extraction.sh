@@ -87,7 +87,7 @@ fi
 
 #shift 1
     echo "###################################################"
-while getopts ":s:o:r:d:u:p:i:x:k:P:r:F:A:U:S:v" opt; do
+while getopts ":s:o:r:d:u:p:i:x:k:P:r:F:A:U:S:m:M:v" opt; do
   case $opt in
     v)
        VERBOSE=1
@@ -177,6 +177,13 @@ while getopts ":s:o:r:d:u:p:i:x:k:P:r:F:A:U:S:v" opt; do
            echo "Running using recovery mode $RECOVERYMODE"
        fi
        ;;
+    M)
+       MYSQLMODE=$OPTARG
+       if [ $VERBOSE -eq 1  ] ; then
+           echo "Running using MySQL c_parser mode $MYSQLMODE"
+       fi
+       ;;
+
     F)
        FILTERBYTABLE=$OPTARG
        if [ $VERBOSE -eq 1  ] ; then
