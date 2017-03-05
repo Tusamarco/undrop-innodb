@@ -57,6 +57,10 @@ c_parser: sql_parser.o c_parser.o tables_dict.o print_data.o check_data.o
 innochecksum_changer: innochecksum.c include/innochecksum.h
 	$(CC) $(CFLAGS) $(LDFLAGS) $(INC_PATH) -o $@ $<
 
+single_sys_parser: single_sys_parser.c
+	@ which mysql_config || (echo "sys_parser needs mysql development package( either -devel or -dev)"; exit -1)
+	$(CC) -o $@ $< `mysql_config --cflags` `mysql_config --libs`
+
 sys_parser: sys_parser.c
 	@ which mysql_config || (echo "sys_parser needs mysql development package( either -devel or -dev)"; exit -1)
 	$(CC) -o $@ $< `mysql_config --cflags` `mysql_config --libs`
