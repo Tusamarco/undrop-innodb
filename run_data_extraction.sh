@@ -227,6 +227,9 @@ done
 
     TIMENOW=`date`;
     echo "Local DIR is set to $LOCALPATH"
+    echo "C_parser Mode is set to  $MYSQLMODE"
+    
+    
     echo "###################################################"
     echo "Process STARTs ${TIMENOW}"
     echo "###################################################"
