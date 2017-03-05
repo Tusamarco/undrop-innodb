@@ -896,7 +896,8 @@ int main(int argc, char **argv) {
 	fprintf(f_sql, "SET FOREIGN_KEY_CHECKS=0;\n");
 	fprintf(f_sql, "LOAD DATA LOCAL INFILE '");
 	if(f_result == stdout){
-		fprintf(f_sql, "%s/dumps/%s/%s", getenv("PWD"), dump_prefix, table->name);
+  		/*fprintf(f_sql, "%s/dumps/%s/%s", getenv("PWD"), dump_prefix, table->name);*/
+		fprintf(f_sql, "%s/%s", dump_prefix, table->name);
 		}
 	else{
 		fprintf(f_sql, "%s", result_file);
