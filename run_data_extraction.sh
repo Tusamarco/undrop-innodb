@@ -127,6 +127,7 @@ while getopts ":s:o:r:d:u:p:i:x:k:P:r:F:A:U:S:m:M:v" opt; do
        ;;
     d)
        DATABASE=$OPTARG
+       SCHEMA_RECOVERY=$DATABASE
        if [ $VERBOSE -eq 1  ] ; then
            echo "Database to extract is set to $DATABASE"
        fi
