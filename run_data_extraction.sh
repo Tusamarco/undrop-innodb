@@ -85,7 +85,9 @@ if [ $# -lt 6 ] ; then
 	exit 1
 fi
 
-#shift 1
+
+#Reading the incoming options
+
     echo "###################################################"
 while getopts ":s:o:r:d:u:p:i:x:k:P:r:F:A:U:S:m:M:v" opt; do
   case $opt in
@@ -99,7 +101,7 @@ while getopts ":s:o:r:d:u:p:i:x:k:P:r:F:A:U:S:m:M:v" opt; do
        fi
        ;;
     U)
-       UNATTENDED=1;
+       UNATTENDED=$OPTARG;
        if [ $VERBOSE -eq 1  ] ; then
            echo "UNATTENDED active"
        fi
@@ -211,6 +213,8 @@ while getopts ":s:o:r:d:u:p:i:x:k:P:r:F:A:U:S:m:M:v" opt; do
   esac
 done
 
+#define conncetion preferences
+
      CONNECTIONPAR=""
      CONNECTIONPAR_C=""
         
@@ -241,28 +245,59 @@ done
         echo "---------------------------"
     
     fi
+#Phase one is mainly extracting the info from ibdata
+# create the files with the data in
+# create the schema in the "fake" mysql that will be used for the recovery and analisys
     
     if [ $PHASE -lt 2 ]
     then
         echo "PHASE 1 ---------------------------"    
-        echo "Clean destination directory from ANY content please confirm [yes] full word"
-        echo -n "Destination directory to clean: $DESTDIR:  [yes/no] --> "
-        read CONFIRMDELDIR
-
-        if [ "x${CONFIRMDELDIR}" !=  "xyes" ] 
-        then
-	    echo "NON empty directory, possible data over-write!!"
-           
-        else
-             `rm -fr $DESTDIR/*`
-            
-        fi
-	# I set the UNATTENDED only after the first queston given it may be too dangerous and can bring to data loss
-        if [ ${UNATTENDED} -eq 1 ]
-        then
-            CONFIRMDELDIR="y"
-        fi
-
+                
+        while true; do
+            echo "Clean destination directory from ANY content please confirm [yes] full word"
+            echo -n "Destination directory to clean: $DESTDIR:  [yes/no/exit] --> "
+            read CONFIRMDELDIR
+        
+        
+            case "$CONFIRMDELDIR" in
+                yes)
+                    echo "You said that I am going to delete all the previous data in ${DESTDIR} give you last chance (15 sec to press ctrl-c)"
+                    sleep 1;
+                    echo "Deleting ... "
+                    `rm -fr $DESTDIR/*`                    
+                    break;
+                    ;;
+                no)
+                    echo "NON empty directory, possible data over-write!!"
+                    break
+                    ;;
+                exit)
+                    echo "Ok goodby ... "
+                    exit
+                    ;;
+                *)
+                 echo "Invalid answer valid answers are yes/no/exit" 
+            esac
+        
+            #if [ "x${CONFIRMDELDIR}" ==  "xyes" ] 
+            #then
+            #    `rm -fr $DESTDIR/*`
+            #    break;
+            #elsif [ "x${CONFIRMDELDIR}" ==  "xno" ] 
+            #    echo "NON empty directory, possible data over-write!!"
+            #    break
+            #elsif [ "x${CONFIRMDELDIR}" ==  "xexit" ] 
+            #    echo "NON empty directory, possible data over-write!!"
+            #     exit
+            #else
+            #    echo "Invalid answer valid answers are yes/no/exit" 
+            #fi
+            ## I set the UNATTENDED only after the first queston given it may be too dangerous and can bring to data loss
+            #if [ ${UNATTENDED} -eq 1 ]
+            #then
+            #    CONFIRMDELDIR="y"
+            #fi
+        done;
  
             
         echo "Processing main IBDATA file  "
@@ -300,6 +335,9 @@ done
         if [ ${UNATTENDED} -eq 0 ]
 	then
 	    read CONFIRMDELDIR
+        else
+	    CONFIRMDELDIR="y"            
+
 	fi
 
 	if [ "x${CONFIRMDELDIR}" == "xy" ]
@@ -314,6 +352,8 @@ done
         if [ ${UNATTENDED} -eq 0 ]
         then
             read CONFIRMDELDIR
+        else
+            CONFIRMDELDIR="y"
         fi
         
 
@@ -339,6 +379,13 @@ done
 #IP="#"
 #PORT="#"
 #SOCKET="#"
+
+#Phase 2
+# here we reate the SQL definition for each table
+# also I process all partitioned tables and partition
+# in that way it will be possible to se exactly what is going to use before using it
+# Partitions def are empty and works as placeholders and a common table is used. this to allow EVENTUALLY to modify the partition definition itself
+
 
     if [ $PHASE -lt 3 ]
     then
@@ -367,8 +414,10 @@ done
             echo -n "Should I recreate the structure for SCHEMA = $SCHEMA_RECOVERY ?[y/n]  --> "
 	    if [ ${UNATTENDED} -eq 0 ]
        	    then
-           	 read CONFIRMDELDIR
-       	    fi
+           	read CONFIRMDELDIR
+       	    else
+                CONFIRMDELDIR="y"
+            fi
 	   
 	    if [ "x${CONFIRMDELDIR}" == "xy" ]
 	    then
@@ -387,6 +436,8 @@ done
 	          if [ ${UNATTENDED} -eq 0 ]
         	  then
 	            read CONFIRMDELDIR
+                  else
+                    CONFIRMDELDIR="y"
         	  fi
 		  
 
@@ -441,17 +492,22 @@ done
                 
 
                 DEFINITIONFILE="${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/table_defs.${schema}.${TABLEDEFINITIONNAME}.sql"
-                #echo $DEFINITIONFILE
-                echo "$EXECDIR/single_sys_parser $CONNECTIONPAR_C -d DRDICTIONARY -r 1 '$SCHEMA_RECOVERY/$TABLENAME_SQL'"
-                `$EXECDIR/single_sys_parser $CONNECTIONPAR_C -d DRDICTIONARY -r 1 '$SCHEMA_RECOVERY/$TABLENAME_SQL' 1> $DEFINITIONFILE`;
-                #`mysqldump $CONNECTIONPAR -n -d -N -y $SCHEMA_RECOVERY $TABLENAME_SQL |egrep -i  -v -e "(drop|/|-|warning)" > $DEFINITIONFILE `
-                #$EXECDIR/create_defs.pl $CONNECTIONPAR --db=$schema --table=$TABLEDEFINITIONNAME > $DEFINITIONFILE
                 
                 if [ $PARTITIONINDEX -gt 0 ]
                 then
-                    #echo "${DESTDIR}/tablesdef/table_defs.${schema}.${TABLEFILTERNAME}.sql"
-                    `echo "" > ${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/table_defs.${schema}.${TABLEFILTERNAME}.sql`
-                fi    
+                    if [ $VERBOSE -eq 1  ] ; then
+                        echo "$EXECDIR/single_sys_parser $CONNECTIONPAR_C -d DRDICTIONARY  $SCHEMA_RECOVERY/$TABLEFILTERNAME  $DEFINITIONFILE";
+                    fi
+                    `$EXECDIR/single_sys_parser $CONNECTIONPAR_C -d DRDICTIONARY  $SCHEMA_RECOVERY/${table} | sed  -e "s/${table}/${TABLEDEFINITIONNAME}/g" > $DEFINITIONFILE`;
+                    `echo "" > ${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/table_defs.${schema}.${TABLEFILTERNAME}.sql`;
+                else
+                    if [ $VERBOSE -eq 1  ] ; then
+                        echo "$EXECDIR/single_sys_parser $CONNECTIONPAR_C -d DRDICTIONARY  '$SCHEMA_RECOVERY/$TABLENAME_SQL'  [$DEFINITIONFILE]" ;
+                    fi
+                    `$EXECDIR/single_sys_parser $CONNECTIONPAR_C -d DRDICTIONARY  $SCHEMA_RECOVERY/$TABLENAME_SQL > $DEFINITIONFILE`;
+                
+                fi
+                
                 
             done;
         done;
@@ -478,7 +534,10 @@ done
         
     fi
 # Starting the extraction process
-
+#Phase 3 is where we extract from ibd and create file tab separated
+# the list of extracted table definition is processed, as such is possible to copy all of them somewhere
+# an move back only the table u want really process
+#OR if ONE table only use the filter and run directly the wrapper from PHASE 3
 
     if [ $PHASE -lt 4 ]
     then
@@ -511,16 +570,14 @@ done
 		    TABLEFILTERNAME=$TABLE
                 fi
 
-#  echo "$TABLE $TABLEFILTERNAME"
   
 		if [ "#$FILTERBYTABLE" != "##" ]
 		then
 		    if [ "#$FILTERBYTABLE" != "#$TABLEFILTERNAME" ]
 		    then
-#echo "$FILTERBYTABLE   $TABLEFILTERNAME"
 			continue;
 		    else
-        echo "$FILTERBYTABLE   $TABLEFILTERNAME"
+                        echo "$FILTERBYTABLE   $TABLEFILTERNAME"
 		    fi
 		
 		fi
@@ -536,14 +593,6 @@ done
                         
                 fi
                 echo "Compile for table = $TABLE [SCHEMA=${SCHEMA}]";
-                
-                #set dir and compile (after havign set the link            
-                #cd $EXECDIR
-                
-                #echo""
-                #printf " OLD %s   NEW %s\n" "$OLDDEFINITION" "$LINK" 
-                #echo""
-                
 		
 		if [ ${ASKCONFIRMATION} -eq 1 ]
 		then
