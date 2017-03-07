@@ -68,7 +68,7 @@ Example:
 Copy all data from original location to `/opt/dr_int/dr_orig/data/` while destination will be `/opt/dr_int/dr_dest/` and binaries are in `/opt/undrop-innodb/`, schema to rescue is windmills
 the following will be the command line I am not using -U now.
 
-```./run_data_extraction.sh -v -A 0 -d windmills -u stress -p test -i 192.168.0.12 -x 3306  -s /opt/dr_int/dr_orig/data/ -o /opt/dr_int/dr_dest/ -r /opt/undrop-innodb/ -M 6 ```
+```run_data_extraction.sh -v -A 0 -d windmills -u stress -p test -i 192.168.0.12 -x 3306  -s /opt/dr_int/dr_orig/data/ -o /opt/dr_int/dr_dest/ -r /opt/undrop-innodb/ -M 6 ```
 
 First question:
 ```PHASE 1 ---------------------------
