@@ -777,6 +777,7 @@ int main(int argc, char **argv) {
         setvbuf(stdout, buffer, _IOFBF, sizeof(buffer));
 
 	f_result = stdout;
+	f_sqlL = stdout;
 	f_sql = stderr;
 	char result_file[1024];
 	char sql_file[1024];
@@ -948,8 +949,8 @@ int main(int argc, char **argv) {
 				}
 			}
 		}
-	fprintf(f_sql, ";\n");
-	fprintf(stderr,f_sqlL, ";\n");
+	//fprintf(f_sql, ";\n");
+	fprintf(f_sqlL, ";\n");
 	if (!process_compact && !process_redundant) {
 	  fprintf(stderr,"Error: Please, specify what format your datafile in. Use -4 for mysql 4.1 and below and -5 for 5.X+\n");
 	  usage();
