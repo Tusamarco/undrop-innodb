@@ -90,6 +90,7 @@ int use_filter_id = 0;
 
 FILE* f_result;
 FILE* f_sql;
+FILE* f_sqlL;
 
 extern int load_table(char*);
 
@@ -776,6 +777,7 @@ int main(int argc, char **argv) {
         setvbuf(stdout, buffer, _IOFBF, sizeof(buffer));
 
 	f_result = stdout;
+	f_sqlL = stdout;
 	f_sql = stderr;
 	char result_file[1024];
 	char sql_file[1024];
@@ -893,60 +895,62 @@ int main(int argc, char **argv) {
 		close(fn);
 		}
 	table_def_t *table = &(table_definitions[0]);
-	fprintf(f_sql, "SET FOREIGN_KEY_CHECKS=0;\n");
-	fprintf(f_sql, "LOAD DATA LOCAL INFILE '");
+	fprintf(f_sqlL, "SET FOREIGN_KEY_CHECKS=0;\n");
+	fprintf(f_sqlL, "LOAD DATA LOCAL INFILE '");
 	if(f_result == stdout){
-		fprintf(f_sql, "%s/dumps/%s/%s", getenv("PWD"), dump_prefix, table->name);
+  		/*fprintf(f_sql, "%s/dumps/%s/%s", getenv("PWD"), dump_prefix, table->name);*/
+		fprintf(f_sqlL, "%s/%s", dump_prefix, table->name);
 		}
 	else{
-		fprintf(f_sql, "%s", result_file);
+		fprintf(f_sqlL, "%s", result_file);
 		}
-	fprintf(f_sql, "' REPLACE INTO TABLE `%s` FIELDS TERMINATED BY '\\t' OPTIONALLY ENCLOSED BY '\"' LINES STARTING BY '%s\\t' ", table->name, table->name);
+	fprintf(f_sqlL, "' REPLACE INTO TABLE `%s` FIELDS TERMINATED BY '\\t' OPTIONALLY ENCLOSED BY '\"' LINES STARTING BY '%s\\t' ", table->name, table->name);
 	int i = 0;
 	int comma = 0;
 	int has_set = 0;
-	fprintf(f_sql, "(");
+	fprintf(f_sqlL, "(");
 	for(i = 0; i < table->fields_count; i++) {
 		if(table->fields[i].type == FT_INTERNAL) continue;
-		if(comma) fprintf(f_sql, ", ");
+		if(comma) fprintf(f_sqlL, ", ");
 		switch(table->fields[i].type){
 			case FT_BLOB:
 			case FT_BIN:
-				fprintf(f_sql, "@var_%s", table->fields[i].name);
+				fprintf(f_sqlL, "@var_%s", table->fields[i].name);
 				has_set = 1;
 				break;
 			case FT_BIT:
-				fprintf(f_sql, "@var_%s", table->fields[i].name);
+				fprintf(f_sqlL, "@var_%s", table->fields[i].name);
 				has_set = 1;
 				break;
 			default:
-				fprintf(f_sql, "`%s`", table->fields[i].name);
+				fprintf(f_sqlL, "`%s`", table->fields[i].name);
 			}
 		comma = 1;
 		}
-	fprintf(f_sql, ")");
+	fprintf(f_sqlL, ")");
 	comma = 0;
 	if(has_set){
-		fprintf(f_sql, "\nSET\n");
+		fprintf(f_sqlL, "\nSET\n");
 		for(i = 0; i < table->fields_count; i++) {
 			if(table->fields[i].type == FT_INTERNAL) continue;
 			switch(table->fields[i].type){
 				case FT_BLOB:
 				case FT_BIN:
-					if(comma) fprintf(f_sql, ",\n");
-					fprintf(f_sql, "    %s = UNHEX(@var_%s)", table->fields[i].name, table->fields[i].name);
+					if(comma) fprintf(f_sqlL, ",\n");
+					fprintf(f_sqlL, "    %s = UNHEX(@var_%s)", table->fields[i].name, table->fields[i].name);
 					comma = 1;
 					break;
 				case FT_BIT:
-					if(comma) fprintf(f_sql, ",\n");
-					fprintf(f_sql, "    %s = CAST(@var_%s AS UNSIGNED)", table->fields[i].name, table->fields[i].name);
+					if(comma) fprintf(f_sqlL, ",\n");
+					fprintf(f_sqlL, "    %s = CAST(@var_%s AS UNSIGNED)", table->fields[i].name, table->fields[i].name);
 					comma = 1;
 					break;
 				default: break;
 				}
 			}
 		}
-	fprintf(f_sql, ";\n");
+	//fprintf(f_sql, ";\n");
+	fprintf(f_sqlL, ";\n");
 	if (!process_compact && !process_redundant) {
 	  fprintf(stderr,"Error: Please, specify what format your datafile in. Use -4 for mysql 4.1 and below and -5 for 5.X+\n");
 	  usage();
