@@ -6,6 +6,16 @@ The scope of the wrapper is to let you set only few things and run it.
 The extraction process can take few minutes to days, depending the data to recover.  
 But having the wrapper to execute the dummy part, you can focus on the data validation and additional adjustments data recovery may require.
 
+## Prerequisites
+
+The toolkit needs `make`, `gcc`, `flex` and `bison` to compile.
+
+## Compilation
+
+To build the toolkit run make in the source code root:
+```
+# make
+```
 
 #How it works?
 The wrapper is split in 3 main Phases:
@@ -272,7 +282,7 @@ The source code of the toolkit is hosted on LaunchPad. The tool has been develop
 
 To best way to get the source code is to clone it from GitHub.
 ```
-git clone https://github.com/twindb/undrop-for-innodb.git
+[not consistent anymore]  git clone https://github.com/twindb/undrop-for-innodb.git
 ```
 
 ### Prerequisites
