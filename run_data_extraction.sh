@@ -544,7 +544,7 @@ done
         echo "PHASE 3 ---------------------------"
         #for schematable in `find $EXECDIR/include/ -name *.defrecovery  -exec basename {} \\;`
         
-        echo "use ${SCHEMA_RECOVERY} " >> ${DESTDIR}/${SCHEMA_RECOVERY}/load_${SCHEMA_RECOVERY}.sql
+        echo "use ${SCHEMA_RECOVERY} " > ${DESTDIR}/${SCHEMA_RECOVERY}/load_${SCHEMA_RECOVERY}.sql
         
         for schematable in `ls ${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/*.sql | xargs -n1 basename`
         do
@@ -665,7 +665,7 @@ done
                 #echo "${EXECDIR}/c_parser -s ${SCHEMA_RECOVERY} -p${DESTDIR}/${SCHEMA_RECOVERY} -6${RECOVERYMODE}f $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_INDEX/${PAGEFILE}.page -b $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_TYPE_BLOB/ -S $CHUNKSIZE -o $DESTDIR/${SCHEMA_RECOVERY}/DATA_${SCHEMA_RECOVERY}_${TABLE}"
                 
                 echo "${EXECDIR}/c_parser -p ${DESTDIR}/${SCHEMA_RECOVERY} -${MYSQLMODE}${RECOVERYMODE}f $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_INDEX/${PAGEFILE}.page -b $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_TYPE_BLOB/ -t ${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/${schematable} -o $DESTDIR/${SCHEMA_RECOVERY}/DATA_${SCHEMA_RECOVERY}_${TABLE}" 
-               `time ${EXECDIR}/c_parser  -p ${DESTDIR}/${SCHEMA_RECOVERY} -${MYSQLMODE}${RECOVERYMODE}f $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_INDEX/${PAGEFILE}.page -b $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_TYPE_BLOB/ -t ${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/${schematable} -o $DESTDIR/${SCHEMA_RECOVERY}/DATA_${SCHEMA_RECOVERY}_${TABLE}.tab 2>> ${DESTDIR}/${SCHEMA_RECOVERY}/load_${SCHEMA_RECOVERY}.sql`
+               `time ${EXECDIR}/c_parser  -p ${DESTDIR}/${SCHEMA_RECOVERY} -${MYSQLMODE}${RECOVERYMODE}f $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_INDEX/${PAGEFILE}.page -b $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_TYPE_BLOB/ -t ${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/${schematable} -o $DESTDIR/${SCHEMA_RECOVERY}/DATA_${SCHEMA_RECOVERY}_${TABLE}.tab 1>> ${DESTDIR}/${SCHEMA_RECOVERY}/load_${SCHEMA_RECOVERY}.sql`
                 
                 TIMENOW=`date`;
                 echo "Data extraction ENDS ${SCHEMA_RECOVERY}_${TABLE} ${TIMENOW}";
