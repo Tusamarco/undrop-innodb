@@ -233,6 +233,9 @@ _snip_
 ```
 
 
+#Note
+to have it work decently, I had to modify the basic code coming from Aleksandr in some different points, and I foresee more changes, especially now given he had stop to produce the free source version.
+Still credit of the wok go to Aleksandr Kuzminsky, who is the original author of the tool.
 
 
 
@@ -245,9 +248,8 @@ _snip_
 
 
 
-
---Former--
-# TwinDB data recovery toolkit
+#--Former--
+## TwinDB data recovery toolkit
 ## Supported Failures
 
 TwinDB Data Recovery Toolkit is a set of tools that operate with MySQL files at low level and allow to recover InnoDB databases after different failure scenarios.
