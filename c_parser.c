@@ -947,7 +947,7 @@ int main(int argc, char **argv) {
 				}
 			}
 		}
-	fprintf(f_sql, ";\n");
+	fprintf(stderr,f_sql, ";\n");
 	if (!process_compact && !process_redundant) {
 	  fprintf(stderr,"Error: Please, specify what format your datafile in. Use -4 for mysql 4.1 and below and -5 for 5.X+\n");
 	  usage();
