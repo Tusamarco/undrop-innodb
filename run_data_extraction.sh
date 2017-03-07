@@ -648,6 +648,7 @@ done
                 `time ${EXECDIR}/stream_parser -f ${SOURCEDIR}/${SCHEMA_RECOVERY}/${TABLE}.ibd`
                 
                 TOCHANGE=`ls -d page*`;
+                `rm -fr $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}`
                 `mv $DESTDIR/${SCHEMA_RECOVERY}/$TOCHANGE $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}`
                 
 #                if [ ! -e ${DESTDIR}/${SCHEMA_RECOVERY}/load_${SCHEMA_RECOVERY}.sql ]
