@@ -234,8 +234,9 @@ _snip_
 
 
 #Note
-to have it work decently, I had to modify the basic code coming from Aleksandr in some different points, and I foresee more changes, especially now given he had stop to produce the free source version.
-Still credit of the wok go to Aleksandr Kuzminsky, who is the original author of the tool.
+To have it work decently, I had to modify the basic code coming from Aleksandr in some different points, and I foresee more changes, especially now given he had stop to produce the free source version.
+
+Still credits of the original code go to Aleksandr Kuzminsky, who is the original author of the tool.
 
 
 
