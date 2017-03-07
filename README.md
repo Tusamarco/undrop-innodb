@@ -60,7 +60,7 @@ Valid options are:
   -4  -- innodb_datafile is in REDUNDANT format
   -5  -- innodb_datafile is in COMPACT format
   -6  -- innodb_datafile is in MySQL 5.6 format
--F filter by <table_name> 
+-F filter by _table_name_ 
 run_data_extraction.sh -v -A 1 -F salaries -d employees -u stress -p tool -i 192.168.0.35 -x 5510 -s /opt/dr_origin -o /opt/dr_dest -r /opt/undrop
 ```
 
@@ -68,12 +68,16 @@ Example:
 Copy all data from original location to `/opt/dr_int/dr_orig/data/` while destination will be `/opt/dr_int/dr_dest/` and binaries are in `/opt/undrop-innodb/`, schema to rescue is windmills
 the following will be the command line I am not using -U now.
 
-```run_data_extraction.sh -v -A 0 -d windmills -u stress -p test -i 192.168.0.12 -x 3306  -s /opt/dr_int/dr_orig/data/ -o /opt/dr_int/dr_dest/ -r /opt/undrop-innodb/ -M 6 ```
+```
+run_data_extraction.sh -v -A 0 -d windmills -u stress -p test -i 192.168.0.12 -x 3306  -s /opt/dr_int/dr_orig/data/ -o /opt/dr_int/dr_dest/ -r /opt/undrop-innodb/ -M 6
+```
 
 First question:
-```PHASE 1 ---------------------------
+```
+PHASE 1 ---------------------------
 Clean destination directory from ANY content please confirm [yes] full word
-Destination directory to clean: /opt/dr_int/dr_dest/:  [yes/no/exit] --> ```
+Destination directory to clean: /opt/dr_int/dr_dest/:  [yes/no/exit] --> 
+```
 
 IF I say YES:
 ```
@@ -91,13 +95,15 @@ ID of device containing file:        64769
 So ibdata will be processed.
 
 Second question:
-```Precessing SYS_TABLES & SYS_INDEXES
+```
+Precessing SYS_TABLES SYS_INDEXES
 Current Path /opt/dr_int/dr_dest/ibdata
 ---------------------------
 Please check if the extracted structure is correct look in: /opt/dr_int/dr_dest/ [y/n]  --> 
-``
+```
 If I check in the destination directory /opt/dr_int/dr_dest/ibdata
-```drwxr-xr-x 4 root root 4096 Mar  6 19:45 ibdata
+```
+drwxr-xr-x 4 root root 4096 Mar  6 19:45 ibdata
 [root@mysqlt2 dr_dest]# ll ibdata/
 total 80
 drwxr-xr-x 2 root root  4096 Mar  6 19:45 FIL_PAGE_INDEX
@@ -109,7 +115,8 @@ drwxr-xr-x 2 root root  4096 Mar  6 19:45 FIL_PAGE_TYPE_BLOB
 -rw-r--r-- 1 root root  7401 Mar  6 19:45 SYS_TABLES
 ```
 You can check whatever you like here and go ahead if all sounds ok.
-```Current Path /opt/dr_int/dr_dest/ibdata
+```
+Current Path /opt/dr_int/dr_dest/ibdata
 ---------------------------
 Please check if the extracted structure is correct look in: /opt/dr_int/dr_dest/ [y/n]  --> y
 Cool continue then
@@ -148,10 +155,11 @@ total 36
 -rw-r--r-- 1 root root   1 Mar  6 19:50 table_defs.windmills.wmillMIDPart#_XXX_PARTITIONED__XXX_#P#universe.sql
 -rw-r--r-- 1 root root 445 Mar  6 19:50 table_defs.windmills.wmillMID.sql
 -rw-r--r-- 1 root root 451 Mar  6 19:50 table_defs.windmills.wmillMIDUUID.sql
-``
+```
 
 Again another question:
-```Please check if the extracted table definition is correct look in: /opt/dr_int/dr_dest//windmills/tablesdef/*.sql [y/n]  --> 
+```
+Please check if the extracted table definition is correct look in: /opt/dr_int/dr_dest//windmills/tablesdef/*.sql [y/n]  --> 
 
 Check OR remove the definition files you want. 
 
@@ -166,14 +174,16 @@ Starting data extraction windmills_wmillAUTOINC Mon Mar  6 19:52:44 EST 2017
 -- 14.01% done
 ```
 File will be in :
-```drwxr-xr-x 4 root root      4096 Mar  6 19:52 windmills_wmillAUTOINC
+```
+drwxr-xr-x 4 root root      4096 Mar  6 19:52 windmills_wmillAUTOINC
 [root@mysqlt2 dr_dest]# ll windmills/windmills_wmillAUTOINC/
 total 8
 drwxr-xr-x 2 root root 4096 Mar  6 19:52 FIL_PAGE_INDEX
 drwxr-xr-x 2 root root 4096 Mar  6 19:52 FIL_PAGE_TYPE_BLOB
 ```
 While final data in:
-```[root@mysqlt2 dr_dest]# ll windmills/
+```
+[root@mysqlt2 dr_dest]# ll windmills/
 total 415252
 -rw-r--r-- 1 root root 332560216 Mar  6 19:54 DATA_windmills_wmillAUTOINC.tab         <------
 -rw-r--r-- 1 root root  92633715 Mar  6 19:55 DATA_windmills_wmillMIDPart#P#asia.tab  <------
@@ -188,15 +198,17 @@ While file to reload the dataset back to mysql is cat windmills/load_windmills.s
 Once the process is over the file will have the command to relaod all the processed tables
 
 This is the message reported at the end:
-```-------------------------- 
+```
+-------------------------- 
 
 ###################################################
 Process ENDs Mon Mar  6 23:36:21 EST 2017
 ###################################################
-``
+```
 
 And this an example of load file:
-```use windmills; 
+```
+use windmills; 
 SET FOREIGN_KEY_CHECKS=0;
 LOAD DATA LOCAL INFILE '/opt/dr_int/dr_dest//windmills/DATA_windmills_wmillMIDPart#P#asia.tab' REPLACE INTO TABLE `wmillMIDPart` FIELDS TERMINATED BY '\t' OPTIONALLY ENCLOSED BY '"' LINES STARTING BY 'wmillMIDPart\t' (`millid`, `id`, `uuid`, `kwatts_s`, `date`, `location`, `active`, `time`, `strrecordtype`);
 SET FOREIGN_KEY_CHECKS=0;
@@ -205,7 +217,8 @@ SET FOREIGN_KEY_CHECKS=0;
 LOAD DATA LOCAL INFILE '/opt/dr_int/dr_dest//windmills/DATA_windmills_wmillMIDPart#P#namerica.tab' REPLACE INTO TABLE `wmillMIDPart` FIELDS TERMINATED BY '\t' OPTIONALLY ENCLOSED BY '"' LINES STARTING BY 'wmillMIDPart\t' (`millid`, `id`, `uuid`, `kwatts_s`, `date`, `location`, `active`, `time`, `strrecordtype`);
 ```
 Example of output:
-```-- Page id: 336, Format: COMPACT, Records list: Valid, Expected records: (113 113)
+```
+-- Page id: 336, Format: COMPACT, Records list: Valid, Expected records: (113 113)
 0000000FAB7B    D00000017B04B2  wmillMIDPart    68      488023  "2524a9a0-fc86-11e6-bbe4-08002734ed50"  511     "2010-02-24"    "For sweetest things turn sourest by "  -12     "2025-07-02 13:16:34"   " de"
 0000000FAB83    D80000021604EE  wmillMIDPart    68      488138  "2526f9e9-fc86-11e6-bbe4-08002734ed50"  2415    "2010-02-24"    "ORLANDO. O, but she is wise.ROSALIND"  -82     "1987-03-06 20:04:32"   "els"
 0000000FABDB    B0000001BB0462  wmillMIDPart    68      493103  "25a7660e-fc86-11e6-bbe4-08002734ed50"  4495    "2010-02-24"    "To play the watchman ever for thy sa"  -21     "2023-10-17 04:31:43"   "r t"
