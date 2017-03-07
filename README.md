@@ -9,9 +9,9 @@ But having the wrapper to execute the dummy part, you can focus on the data vali
 
 #How it works?
 The wrapper is split in 3 main Phases:
-  1) innodb data extraction and DRDICTIONARY creation
-  2) re-generate the schema and create table definitions
-  3) data extraction from corrupted files in to pages (binary), extract data in tab separated format
+ - 1) innodb data extraction and DRDICTIONARY creation
+ - 2) re-generate the schema and create table definitions
+ - 3) data extraction from corrupted files in to pages (binary), extract data in tab separated format
 
 The whole process require a dummy mysql server to run. The tool will access it and will use it to generate processing informations.
 It will also contains the information from the InnoDB dictionary (in the DRDICTIONARY) that can be review and eventually modified. 
