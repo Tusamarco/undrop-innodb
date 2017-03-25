@@ -315,7 +315,7 @@ done
         if [ ! -e  "${EXECDIR}/c_parser" ]
         then
             printf "\nCompile before running \n"
-            `time make dict_parsers 1>&2>/dev/null`
+            `time make c_parser 1>&2>/dev/null`
         fi
     
         printf "\nPrecessing SYS_TABLES & SYS_INDEXES\n"
@@ -323,11 +323,17 @@ done
         cd "${DESTDIR}/ibdata";
         
         echo "Current Path `pwd`"
-        
+        echo "${EXECDIR}/c_parser -t ${EXECDIR}/dictionary/SYS_TABLES.sql  -p${DESTDIR}/ibdata -4Uf FIL_PAGE_INDEX/0000000000000001.page > ${DESTDIR}/ibdata/SYS_TABLES 2> ${DESTDIR}/ibdata/load_dictionary.sql"
         `${EXECDIR}/c_parser -t ${EXECDIR}/dictionary/SYS_TABLES.sql  -p${DESTDIR}/ibdata -4Uf FIL_PAGE_INDEX/0000000000000001.page > ${DESTDIR}/ibdata/SYS_TABLES 2> ${DESTDIR}/ibdata/load_dictionary.sql`
+        
+        echo "${EXECDIR}/c_parser -t ${EXECDIR}/dictionary/SYS_INDEXES.sql -p${DESTDIR}/ibdata -4Uf FIL_PAGE_INDEX/0000000000000003.page > ${DESTDIR}/ibdata/SYS_INDEXES 2>> ${DESTDIR}/ibdata/load_dictionary.sql"
         `${EXECDIR}/c_parser -t ${EXECDIR}/dictionary/SYS_INDEXES.sql -p${DESTDIR}/ibdata -4Uf FIL_PAGE_INDEX/0000000000000003.page > ${DESTDIR}/ibdata/SYS_INDEXES 2>> ${DESTDIR}/ibdata/load_dictionary.sql`
-	`${EXECDIR}/c_parser -t ${EXECDIR}/dictionary/SYS_COLUMNS.sql -p${DESTDIR}/ibdata -4Uf FIL_PAGE_INDEX/0000000000000002.page > ${DESTDIR}/ibdata/SYS_COLUMNS 2>> ${DESTDIR}/ibdata/load_dictionary.sql`
-	`${EXECDIR}/c_parser -t ${EXECDIR}/dictionary/SYS_FIELDS.sql  -p${DESTDIR}/ibdata -4Uf FIL_PAGE_INDEX/0000000000000004.page > ${DESTDIR}/ibdata/SYS_FIELDS 2>> ${DESTDIR}/ibdata/load_dictionary.sql`
+	
+        echo "${EXECDIR}/c_parser -t ${EXECDIR}/dictionary/SYS_COLUMNS.sql -p${DESTDIR}/ibdata -4Uf FIL_PAGE_INDEX/0000000000000002.page > ${DESTDIR}/ibdata/SYS_COLUMNS 2>> ${DESTDIR}/ibdata/load_dictionary.sql"
+        `${EXECDIR}/c_parser -t ${EXECDIR}/dictionary/SYS_COLUMNS.sql -p${DESTDIR}/ibdata -4Uf FIL_PAGE_INDEX/0000000000000002.page > ${DESTDIR}/ibdata/SYS_COLUMNS 2>> ${DESTDIR}/ibdata/load_dictionary.sql`
+	
+        echo "${EXECDIR}/c_parser -t ${EXECDIR}/dictionary/SYS_FIELDS.sql  -p${DESTDIR}/ibdata -4Uf FIL_PAGE_INDEX/0000000000000004.page > ${DESTDIR}/ibdata/SYS_FIELDS 2>> ${DESTDIR}/ibdata/load_dictionary.sql"
+        `${EXECDIR}/c_parser -t ${EXECDIR}/dictionary/SYS_FIELDS.sql  -p${DESTDIR}/ibdata -4Uf FIL_PAGE_INDEX/0000000000000004.page > ${DESTDIR}/ibdata/SYS_FIELDS 2>> ${DESTDIR}/ibdata/load_dictionary.sql`
         
         echo "---------------------------"        
 
@@ -544,7 +550,7 @@ done
         echo "PHASE 3 ---------------------------"
         #for schematable in `find $EXECDIR/include/ -name *.defrecovery  -exec basename {} \\;`
         
-        echo "use ${SCHEMA_RECOVERY} " > ${DESTDIR}/${SCHEMA_RECOVERY}/load_${SCHEMA_RECOVERY}.sql
+        echo " use ${SCHEMA_RECOVERY}; " > ${DESTDIR}/${SCHEMA_RECOVERY}/load_${SCHEMA_RECOVERY}.sql
         
         for schematable in `ls ${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/*.sql | xargs -n1 basename`
         do
