@@ -339,12 +339,8 @@ done
         
         echo "${EXECDIR}/c_parser -t ${EXECDIR}/dictionary/SYS_FIELDS.sql  -p${DESTDIR}/ibdata -4Uf FIL_PAGE_INDEX/0000000000000004.page > ${DESTDIR}/ibdata/SYS_FIELDS 2>> ${DESTDIR}/ibdata/load_dictionary.sql"
         `${EXECDIR}/c_parser -t ${EXECDIR}/dictionary/SYS_FIELDS.sql  -p${DESTDIR}/ibdata -4Uf FIL_PAGE_INDEX/0000000000000004.page > ${DESTDIR}/ibdata/SYS_FIELDS 2>> ${DESTDIR}/ibdata/load_dictionary.sql`
-<<<<<<< HEAD
-        `tail -n2 ${DESTDIR}/ibdata/SYS_FIELDS >> ${DESTDIR}/ibdata/load_dictionary.sql` 
-=======
         `tail -n2 ${DESTDIR}/ibdata/SYS_FIELDS >> ${DESTDIR}/ibdata/load_dictionary.sql`
         
->>>>>>> ff8533db95688cf72dbf5a254f8d4fd3fbb0a989
         echo "---------------------------"        
 
         echo -n "Please check if the extracted structure is correct look in: $DESTDIR [y/n]  --> "
