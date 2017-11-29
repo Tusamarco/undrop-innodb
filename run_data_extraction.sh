@@ -20,7 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-# v1.0
+# v1.1
 
 ARGV="$@"
 VERBOSE=0
@@ -315,7 +315,7 @@ done
         if [ ! -e  "${EXECDIR}/c_parser" ]
         then
             printf "\nCompile before running \n"
-            `time make dict_parsers 1>&2>/dev/null`
+            `time make c_parsers 1>&2>/dev/null`
         fi
     
         printf "\nPrecessing SYS_TABLES & SYS_INDEXES\n"
