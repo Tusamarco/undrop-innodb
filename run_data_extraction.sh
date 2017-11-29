@@ -20,7 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-# v1.0
+# v1.1
 
 ARGV="$@"
 VERBOSE=0
@@ -315,7 +315,7 @@ done
         if [ ! -e  "${EXECDIR}/c_parser" ]
         then
             printf "\nCompile before running \n"
-            `time make c_parser 1>&2>/dev/null`
+            `time make c_parsers 1>&2>/dev/null`
         fi
     
         printf "\nPrecessing SYS_TABLES & SYS_INDEXES\n"
@@ -323,36 +323,23 @@ done
         cd "${DESTDIR}/ibdata";
         
         echo "Current Path `pwd`"
-         echo "${EXECDIR}/c_parser -t ${EXECDIR}/dictionary/SYS_TABLES.sql  -p${DESTDIR}/ibdata -4Uf FIL_PAGE_INDEX/0000000000000001.page > ${DESTDIR}/ibdata/SYS_TABLES 2> ${DESTDIR}/ibdata/load_dictionary.sql"
+        
         `${EXECDIR}/c_parser -t ${EXECDIR}/dictionary/SYS_TABLES.sql  -p${DESTDIR}/ibdata -4Uf FIL_PAGE_INDEX/0000000000000001.page > ${DESTDIR}/ibdata/SYS_TABLES 2> ${DESTDIR}/ibdata/load_dictionary.sql`
-        `tail -n2 ${DESTDIR}/ibdata/SYS_TABLES > ${DESTDIR}/ibdata/load_dictionary.sql`
-        
-        
-        echo "${EXECDIR}/c_parser -t ${EXECDIR}/dictionary/SYS_INDEXES.sql -p${DESTDIR}/ibdata -4Uf FIL_PAGE_INDEX/0000000000000003.page > ${DESTDIR}/ibdata/SYS_INDEXES 2>> ${DESTDIR}/ibdata/load_dictionary.sql"
         `${EXECDIR}/c_parser -t ${EXECDIR}/dictionary/SYS_INDEXES.sql -p${DESTDIR}/ibdata -4Uf FIL_PAGE_INDEX/0000000000000003.page > ${DESTDIR}/ibdata/SYS_INDEXES 2>> ${DESTDIR}/ibdata/load_dictionary.sql`
-	`tail -n2 ${DESTDIR}/ibdata/SYS_INDEXES >> ${DESTDIR}/ibdata/load_dictionary.sql`
-        
-        
-        echo "${EXECDIR}/c_parser -t ${EXECDIR}/dictionary/SYS_COLUMNS.sql -p${DESTDIR}/ibdata -4Uf FIL_PAGE_INDEX/0000000000000002.page > ${DESTDIR}/ibdata/SYS_COLUMNS 2>> ${DESTDIR}/ibdata/load_dictionary.sql"
-        `${EXECDIR}/c_parser -t ${EXECDIR}/dictionary/SYS_COLUMNS.sql -p${DESTDIR}/ibdata -4Uf FIL_PAGE_INDEX/0000000000000002.page > ${DESTDIR}/ibdata/SYS_COLUMNS 2>> ${DESTDIR}/ibdata/load_dictionary.sql`
-	`tail -n2 ${DESTDIR}/ibdata/SYS_COLUMNS >> ${DESTDIR}/ibdata/load_dictionary.sql`
-        
-        echo "${EXECDIR}/c_parser -t ${EXECDIR}/dictionary/SYS_FIELDS.sql  -p${DESTDIR}/ibdata -4Uf FIL_PAGE_INDEX/0000000000000004.page > ${DESTDIR}/ibdata/SYS_FIELDS 2>> ${DESTDIR}/ibdata/load_dictionary.sql"
-        `${EXECDIR}/c_parser -t ${EXECDIR}/dictionary/SYS_FIELDS.sql  -p${DESTDIR}/ibdata -4Uf FIL_PAGE_INDEX/0000000000000004.page > ${DESTDIR}/ibdata/SYS_FIELDS 2>> ${DESTDIR}/ibdata/load_dictionary.sql`
-        `tail -n2 ${DESTDIR}/ibdata/SYS_FIELDS >> ${DESTDIR}/ibdata/load_dictionary.sql`
+	      `${EXECDIR}/c_parser -t ${EXECDIR}/dictionary/SYS_COLUMNS.sql -p${DESTDIR}/ibdata -4Uf FIL_PAGE_INDEX/0000000000000002.page > ${DESTDIR}/ibdata/SYS_COLUMNS 2>> ${DESTDIR}/ibdata/load_dictionary.sql`
+	      `${EXECDIR}/c_parser -t ${EXECDIR}/dictionary/SYS_FIELDS.sql  -p${DESTDIR}/ibdata -4Uf FIL_PAGE_INDEX/0000000000000004.page > ${DESTDIR}/ibdata/SYS_FIELDS 2>> ${DESTDIR}/ibdata/load_dictionary.sql`
         
         echo "---------------------------"        
 
         echo -n "Please check if the extracted structure is correct look in: $DESTDIR [y/n]  --> "
         if [ ${UNATTENDED} -eq 0 ]
-	then
-	    read CONFIRMDELDIR
+	      then
+	         read CONFIRMDELDIR
         else
-	    CONFIRMDELDIR="y"            
+	         CONFIRMDELDIR="y"            
+	      fi
 
-	fi
-
-	if [ "x${CONFIRMDELDIR}" == "xy" ]
+	      if [ "x${CONFIRMDELDIR}" == "xy" ]
         then
             echo "Cool continue then"
         else
@@ -361,7 +348,8 @@ done
         fi 
         echo "---------------------------"
         echo -n "(Re)Create the dictionary?: $DESTDIR [y/n]  --> "
-        if [ ${UNATTENDED} -eq 0 ]
+        
+				if [ ${UNATTENDED} -eq 0 ]
         then
             read CONFIRMDELDIR
         else
@@ -371,12 +359,12 @@ done
 
         if [ "x${CONFIRMDELDIR}" == "xy" ]
         then
-	  echo "Loading dictionary information ...";
-	  `mysql $CONNECTIONPAR -D mysql -e "DROP schema if exists DRDICTIONARY"`;
-	  `mysql $CONNECTIONPAR -D mysql -e "create schema if not exists DRDICTIONARY"`;
-	  `mysql $CONNECTIONPAR -D mysql -D DRDICTIONARY < ${EXECDIR}/dictionary.sql`
-	  `mysql $CONNECTIONPAR -D DRDICTIONARY <  ${DESTDIR}/ibdata/load_dictionary.sql`;
-	  echo "Loading dictionary information ... COMPLETED";
+	         echo "Loading dictionary information ...";
+					`mysql $CONNECTIONPAR -D mysql -e "DROP schema if exists DRDICTIONARY"`;
+					`mysql $CONNECTIONPAR -D mysql -e "create schema if not exists DRDICTIONARY"`;
+					`mysql $CONNECTIONPAR -D mysql -D DRDICTIONARY < ${EXECDIR}/dictionary.sql`
+					`mysql $CONNECTIONPAR -D DRDICTIONARY <  ${DESTDIR}/ibdata/load_dictionary.sql`;
+				  echo "Loading dictionary information ... COMPLETED";
         else
             echo "Check what is the problem and run me again"
             exit 0 
@@ -393,7 +381,7 @@ done
 #SOCKET="#"
 
 #Phase 2
-# here we reate the SQL definition for each table
+# here we create the SQL definition for each table
 # also I process all partitioned tables and partition
 # in that way it will be possible to se exactly what is going to use before using it
 # Partitions def are empty and works as placeholders and a common table is used. this to allow EVENTUALLY to modify the partition definition itself
@@ -402,11 +390,13 @@ done
     if [ $PHASE -lt 3 ]
     then
         echo "PHASE 2 ---------------------------"
+				RUNDEF=0;
+				
         `rm -f $EXECDIR/include/*.defrecovery`;
 
         for schema in  $DATABASE ;
         do
-	    SCHEMA_RECOVERY="${schema}"
+	          SCHEMA_RECOVERY="${schema}"
 
             if [ ! -e $DESTDIR/${SCHEMA_RECOVERY} ]
             then
@@ -424,126 +414,133 @@ done
 
 
             echo -n "Should I recreate the structure for SCHEMA = $SCHEMA_RECOVERY ?[y/n]  --> "
-	    if [ ${UNATTENDED} -eq 0 ]
+	          if [ ${UNATTENDED} -eq 0 ]
        	    then
-           	read CONFIRMDELDIR
+           	    read CONFIRMDELDIR
        	    else
                 CONFIRMDELDIR="y"
             fi
 	   
-	    if [ "x${CONFIRMDELDIR}" == "xy" ]
-	    then
-		`mysql $CONNECTIONPAR -D mysql -e "create schema if not exists ${SCHEMA_RECOVERY}"`;
-		echo "EXECUTING sys_parser.... $EXECDIR/sys_parser $CONNECTIONPAR_C -d DRDICTIONARY -r 1 $schema"
+						if [ "x${CONFIRMDELDIR}" == "xy" ]
+						then
+							 `mysql $CONNECTIONPAR -D mysql -e "create schema if not exists ${SCHEMA_RECOVERY}"`;
+							 echo "EXECUTING sys_parser.... $EXECDIR/sys_parser $CONNECTIONPAR_C -d DRDICTIONARY -r 1 $schema"
+			
+							if [ $VERBOSE -eq 1  ] ; then
+								echo "$EXECDIR/sys_parser $CONNECTIONPAR_C -d DRDICTIONARY -r 1 $schema 1> ${DESTDIR}/${SCHEMA_RECOVERY}/${schema}_definition.sql"
+								echo "mysql $CONNECTIONPAR -D $SCHEMA_RECOVERY <  ${DESTDIR}/${SCHEMA_RECOVERY}/${schema}_definition.sql "
+							fi
+					
+							`$EXECDIR/sys_parser $CONNECTIONPAR_C -d DRDICTIONARY -r 1 $schema 1> ${DESTDIR}/${SCHEMA_RECOVERY}/${schema}_definition.sql`;
+							MYERROR=0;
+							`mysql $CONNECTIONPAR -D $SCHEMA_RECOVERY <  ${DESTDIR}/${SCHEMA_RECOVERY}/${schema}_definition.sql `;
+					    MYERROR=$?;
+							if [ $MYERROR > 0 ]
+							then
+								 echo "something went wrong with the definition file; I will set the auto generation of it from TABLEDEF \n Run table def creation and you should have a file named:"
+								 echo "\t ${DESTDIR}/${SCHEMA_RECOVERY}/${schema}_definition2.sql"
+								 echo "In the output directory"
+								 RUNDEF=1
+							fi	
+							
+							
+							echo -n "Please check the status of the SCHEMA = $SCHEMA_RECOVERY and press [y] to continue or [n] to exit ?[y/n]  --> "
+							if [ ${UNATTENDED} -eq 0 ]
+							then
+								read CONFIRMDELDIR
+										else
+											CONFIRMDELDIR="y"
+							fi
+					
+							if [ "x${CONFIRMDELDIR}" == "xy" ]
+							then
+								 echo  "Continue......... to create table_def";		 
+							else
+								exit 1;
+							fi
+						else
+							echo "Ok I assume that SCHEMA = $schema is already there";
+							 
+						fi 
+									 
+									
+									
+						for table in `find $SOURCEDIR/${SCHEMA_RECOVERY}/ -name *.ibd  -exec basename {} \;|awk -F '.' '{print $1}' `;
+						do
+								TABLEDEFINITIONNAME=""
+								PARTITIONINDEX=0
+								PARTITIONINDEX=`expr index "$table" \#`
+								#echo "PINDEX = $PARTITIONINDEX"
+								TABLENAME_SQL=""
+								
+								if [ $PARTITIONINDEX -gt 0 ]
+								then
+										
+										TABLEFILTERNAME=${table:0:($PARTITIONINDEX - 1)}"#_XXX_PARTITIONED__XXX_"${table:($PARTITIONINDEX - 1)}
+										TABLENAME_SQL=${table:0:($PARTITIONINDEX - 1)}
+										TABLEDEFINITIONNAME=${table:0:($PARTITIONINDEX - 1)}
+										
+								
+								else
+										TABLEDEFINITIONNAME=$table
+										TABLENAME_SQL=$table
+								fi
+								
+								if [ $VERBOSE -eq 1  ] ; then
+										echo "Creating definition for table ($table) : $SOURCEDIR/${SCHEMA_RECOVERY}/${TABLEDEFINITIONNAME}"
+										
+								fi
+								
+								if [ ! -e $DESTDIR/${SCHEMA_RECOVERY} ]
+								then
+										echo "Destination (${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/) directory not present I will create it";
+										`mkdir -p ${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/`
+										echo "---------------------------"
+								
+								fi
+	
+								DEFINITIONFILE="${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/table_defs.${schema}.${TABLEDEFINITIONNAME}.sql"
+								
+								if [ $PARTITIONINDEX -gt 0 ]
+								then
+										if [ $VERBOSE -eq 1  ] ; then
+												echo "$EXECDIR/single_sys_parser $CONNECTIONPAR_C -d DRDICTIONARY  $SCHEMA_RECOVERY/$TABLEFILTERNAME  $DEFINITIONFILE";
+										fi
+										`$EXECDIR/single_sys_parser $CONNECTIONPAR_C -d DRDICTIONARY  $SCHEMA_RECOVERY/${table} | sed  -e "s/${table}/${TABLEDEFINITIONNAME}/g" > $DEFINITIONFILE`;
+										`echo "" > ${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/table_defs.${schema}.${TABLEFILTERNAME}.sql`;
+								else
+										if [ $VERBOSE -eq 1  ] ; then
+												echo "$EXECDIR/single_sys_parser $CONNECTIONPAR_C -d DRDICTIONARY  '$SCHEMA_RECOVERY/$TABLENAME_SQL'  [$DEFINITIONFILE]" ;
+										fi
+										`$EXECDIR/single_sys_parser $CONNECTIONPAR_C -d DRDICTIONARY  $SCHEMA_RECOVERY/$TABLENAME_SQL > $DEFINITIONFILE`;
+								
+								fi
+						done;
+				done;
+				
+				if [ $RUNDEF > 0  ]
+				then
+					for def in `ls -D ${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/*.sql`; do cat $def >> ${DESTDIR}/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_definition2.sql; done
+					echo "Additional Schema definition created in ${DESTDIR}/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_definition2.sql \n"
+				fi
+				
+				echo -n "Please check if the extracted table definition is correct look in: ${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/*.sql [y/n]  --> "
+				if [ ${UNATTENDED} -eq 0 ]
+				then
+ 					  read CONFIRMDELDIR
+				else
+				    CONFIRMDELDIR="y"
+				fi
 
-		if [ $VERBOSE -eq 1  ] ; then
-		  echo "$EXECDIR/sys_parser $CONNECTIONPAR_C -d DRDICTIONARY -r 1 $schema 1> ${DESTDIR}/${SCHEMA_RECOVERY}/${schema}_definition.sql"
-		  echo "mysql $CONNECTIONPAR -D $SCHEMA_RECOVERY <  ${DESTDIR}/${SCHEMA_RECOVERY}/${schema}_definition.sql "
-		fi
-
-		`$EXECDIR/sys_parser $CONNECTIONPAR_C -d DRDICTIONARY -r 1 $schema 1> ${DESTDIR}/${SCHEMA_RECOVERY}/${schema}_definition.sql`;
-		 `mysql $CONNECTIONPAR -D $SCHEMA_RECOVERY <  ${DESTDIR}/${SCHEMA_RECOVERY}/${schema}_definition.sql `;
-
-		  echo -n "Please check the status of the SCHEMA = $SCHEMA_RECOVERY and press [y] to continue or [n] to exit ?[y/n]  --> "
-	          if [ ${UNATTENDED} -eq 0 ]
-        	  then
-	            read CONFIRMDELDIR
-                  else
-                    CONFIRMDELDIR="y"
-        	  fi
-		  
-
-
-		  if [ "x${CONFIRMDELDIR}" == "xy" ]
-		  then
-		     echo  "Continue......... to create table_def";		 
-		  else
-		    exit 1;
-		  fi
-	    else
-		echo "Ok I assume that SCHEMA = $schema is already there";
-		 
-	    fi 
-         
-        
-        
-            for table in `find $SOURCEDIR/${SCHEMA_RECOVERY}/ -name *.ibd  -exec basename {} \;|awk -F '.' '{print $1}' `;
-            do
-                TABLEDEFINITIONNAME=""
-                PARTITIONINDEX=0
-                PARTITIONINDEX=`expr index "$table" \#`
-                #echo "PINDEX = $PARTITIONINDEX"
-                TABLENAME_SQL=""
-                
-                if [ $PARTITIONINDEX -gt 0 ]
-                then
-                    
-                    TABLEFILTERNAME=${table:0:($PARTITIONINDEX - 1)}"#_XXX_PARTITIONED__XXX_"${table:($PARTITIONINDEX - 1)}
-                    TABLENAME_SQL=${table:0:($PARTITIONINDEX - 1)}
-                    TABLEDEFINITIONNAME=${table:0:($PARTITIONINDEX - 1)}
-                    
-                
-                else
-                    TABLEDEFINITIONNAME=$table
-                    TABLENAME_SQL=$table
-                fi
-                
-                if [ $VERBOSE -eq 1  ] ; then
-                    echo "Creating definition for table ($table) : $SOURCEDIR/${SCHEMA_RECOVERY}/${TABLEDEFINITIONNAME}"
-                    
-                fi
-                
-                if [ ! -e $DESTDIR/${SCHEMA_RECOVERY} ]
-                then
-                    echo "Destination (${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/) directory not present I will create it";
-                    `mkdir -p ${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/`
-                    echo "---------------------------"
-                
-                fi
-                
-                
-
-                DEFINITIONFILE="${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/table_defs.${schema}.${TABLEDEFINITIONNAME}.sql"
-                
-                if [ $PARTITIONINDEX -gt 0 ]
-                then
-                    if [ $VERBOSE -eq 1  ] ; then
-                        echo "$EXECDIR/single_sys_parser $CONNECTIONPAR_C -d DRDICTIONARY  $SCHEMA_RECOVERY/$TABLEFILTERNAME  $DEFINITIONFILE";
-                    fi
-                    `$EXECDIR/single_sys_parser $CONNECTIONPAR_C -d DRDICTIONARY  $SCHEMA_RECOVERY/${table} | sed  -e "s/${table}/${TABLEDEFINITIONNAME}/g" > $DEFINITIONFILE`;
-                    `echo "" > ${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/table_defs.${schema}.${TABLEFILTERNAME}.sql`;
-                else
-                    if [ $VERBOSE -eq 1  ] ; then
-                        echo "$EXECDIR/single_sys_parser $CONNECTIONPAR_C -d DRDICTIONARY  '$SCHEMA_RECOVERY/$TABLENAME_SQL'  [$DEFINITIONFILE]" ;
-                    fi
-                    `$EXECDIR/single_sys_parser $CONNECTIONPAR_C -d DRDICTIONARY  $SCHEMA_RECOVERY/$TABLENAME_SQL > $DEFINITIONFILE`;
-                
-                fi
-                
-                
-            done;
-        done;
-    
-    
-        echo -n "Please check if the extracted table definition is correct look in: ${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/*.sql [y/n]  --> "
-	 if [ ${UNATTENDED} -eq 0 ]
-         then
-                read CONFIRMDELDIR
- 	 else
-		CONFIRMDELDIR="y"
-         fi
-
-
-        if [ "x${CONFIRMDELDIR}" == "xy" ]
-        then
-            echo "Cool continue then"
-        else
-            echo "Check what is the problem and run me again"
-            exit 0 
-        fi
-        echo "---------------------------"
-        
-        
+				if [ "x${CONFIRMDELDIR}" == "xy" ]
+				then
+						echo "Cool continue then"
+				else
+						echo "Check what is the problem and run me again"
+						exit 0 
+				fi
+				echo "---------------------------"
+						
     fi
 # Starting the extraction process
 #Phase 3 is where we extract from ibd and create file tab separated
@@ -556,136 +553,147 @@ done
         echo "PHASE 3 ---------------------------"
         #for schematable in `find $EXECDIR/include/ -name *.defrecovery  -exec basename {} \\;`
         
-        echo " use ${SCHEMA_RECOVERY}; " > ${DESTDIR}/${SCHEMA_RECOVERY}/load_${SCHEMA_RECOVERY}.sql
+        echo "use ${SCHEMA_RECOVERY} " > ${DESTDIR}/${SCHEMA_RECOVERY}/load_${SCHEMA_RECOVERY}.sql
         
         for schematable in `ls ${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/*.sql | xargs -n1 basename`
         do
     #read the table name and schema
     
-                SCHEMA=`echo $schematable|awk -F '.' '{print $2}' `;
-                TABLE=`echo $schematable|awk -F '.' '{print $3}' `;
-                PARTITIONINDEX=`expr index "$TABLE" \#`
-                ISPARTITIONED=0
-    
-                PARTITIONFLAG=$(expr match "$TABLE"  '.*\(XXX_PARTITIONED__XXX\)')
-                
-                if [ "#$PARTITIONFLAG" = "#XXX_PARTITIONED__XXX" ]
-                then
-                    ISPARTITIONED=1
-                fi
-    
-                if [ $ISPARTITIONED -gt 0 ]
-                then
-                    TABLEFILTERNAME=${TABLE:0:($PARTITIONINDEX -1 )}
-                    schematable="table_defs.${SCHEMA}.${TABLEFILTERNAME}.sql"
-                    TABLE=`echo $TABLE|sed -e"s/#_XXX_PARTITIONED__XXX_//g"`
-		 else
-		    TABLEFILTERNAME=$TABLE
-                fi
-
-  
-		if [ "#$FILTERBYTABLE" != "##" ]
-		then
-		    if [ "#$FILTERBYTABLE" != "#$TABLEFILTERNAME" ]
-		    then
-			continue;
-		    else
-                        echo "$FILTERBYTABLE   $TABLEFILTERNAME"
-		    fi
+						SCHEMA=`echo $schematable|awk -F '.' '{print $2}' `;
+						TABLE=`echo $schematable|awk -F '.' '{print $3}' `;
+						PARTITIONINDEX=`expr index "$TABLE" \#`
+						ISPARTITIONED=0
 		
-		fi
-        
-                if [ $VERBOSE -eq 1  ] ; then
-                        echo "Original Name = $schematable" ;   
-                        echo "Schema Name = $SCHEMA" ;
-                        echo "Table Name = $TABLE" ;
-                        echo "Table is Partitioned = $ISPARTITIONED" ;
-                        #LINK=`Table definition SQL `
-                        #echo "active definition link:${LINK}"
-                        echo "Active Schema/Table ${schematable}"
-                        
-                fi
-                echo "Compile for table = $TABLE [SCHEMA=${SCHEMA}]";
+						PARTITIONFLAG=$(expr match "$TABLE"  '.*\(XXX_PARTITIONED__XXX\)')
+						
+						if [ "#$PARTITIONFLAG" = "#XXX_PARTITIONED__XXX" ]
+						then
+								ISPARTITIONED=1
+						fi
 		
-		if [ ${ASKCONFIRMATION} -eq 1 ]
-		then
-		  
-		  while [ 1=1 ]
-		  do
-		    CONFIRMDELDIR="xn";
-		    echo -n "Process next Table ${TABLE}? [y/n]  --> "
-        	    read CONFIRMDELDIR
-		    if [ "#${CONFIRMDELDIR}" == "#y" ]
-		    then
-			echo "Cool continue then ${CONFIRMDELDIR}"
-			break;
-		    else
-		      echo "Waiting ..";
-		    fi
-		  done  
-		fi
-                
-               
+						if [ $ISPARTITIONED -gt 0 ]
+						then
+								TABLEFILTERNAME=${TABLE:0:($PARTITIONINDEX -1 )}
+								schematable="table_defs.${SCHEMA}.${TABLEFILTERNAME}.sql"
+								TABLE=`echo $TABLE|sed -e"s/#_XXX_PARTITIONED__XXX_//g"`
+						else
+								TABLEFILTERNAME=$TABLE
+						fi
+		
+						if [ "#$FILTERBYTABLE" != "##" ]
+						then
+								if [ "#$FILTERBYTABLE" != "#$TABLEFILTERNAME" ]
+								then
+									continue;
+								else
+																echo "$FILTERBYTABLE   $TABLEFILTERNAME"
+								fi
+						
+						fi
+						
+						if [ $VERBOSE -eq 1  ] ; then
+								echo "Original Name = $schematable" ;   
+								echo "Schema Name = $SCHEMA" ;
+								echo "Table Name = $TABLE" ;
+								echo "Table is Partitioned = $ISPARTITIONED" ;
+								#LINK=`Table definition SQL `
+								#echo "active definition link:${LINK}"
+								echo "Active Schema/Table ${schematable}"
+						fi
+						echo "Compile for table = $TABLE [SCHEMA=${SCHEMA}]";
+				
+						if [ ${ASKCONFIRMATION} -eq 1 ]
+						then
+							while [ 1=1 ]
+							do
+								CONFIRMDELDIR="xn";
+								echo -n "Process next Table ${TABLE}? [y/n]  --> "
+											read CONFIRMDELDIR
+								if [ "#${CONFIRMDELDIR}" == "#y" ]
+								then
+										echo "Cool continue then ${CONFIRMDELDIR}"
+										break;
+								else
+										echo "Waiting ..";
+								fi
+							done  
+						fi
+			
+						#Read table ID from SYS_TABLE
+						ESCTABLE=${TABLE//_/.\\_};
+						ESCSCHEMA=${SCHEMA//_/.\\_};
+				
+						TABLEID=`cat ${DESTDIR}/ibdata/SYS_TABLES|grep -e "SYS_TABLES.\"${ESCSCHEMA}/${ESCTABLE}\""|sed -e"s/\t/,/g"|awk -F ',' '{print $5}'|head -n 1`;
+						INDEXID=`cat ${DESTDIR}/ibdata/SYS_INDEXES|grep -e "SYS_INDEXES.${TABLEID}"|grep PRIMARY|sed -e"s/\t/,/g"|awk -v r=${TABLEID} -F ',' '{if($4==r){print $5}else{print $4 $5}}'|head -n 1`;
+						PAGEFILE=""
+						printf -v PAGEFILE "%016d" $INDEXID
+		#                if [ $VERBOSE -eq 1  ] ; then
+		#                  echo "cat ${DESTDIR}/ibdata/SYS_TABLES|grep -e \"SYS_TABLES.\"${ESCSCHEMA}/${ESCTABLE}\"\"|sed -e\"s/\t/,/g\"|awk -F ',' '{print \$5}'"
+		#		  echo "cat ${DESTDIR}/ibdata/SYS_INDEXES|grep -e \"SYS_INDEXES.${TABLEID}\"|grep PRIMARY|sed -e\"s/\t/,/g\"|awk -F ',' '{if(\$4 == "${TABLEID}"){print \$5}else{exit 1}}'";
+		#                fi
+						echo "Processing TableId $TABLEID with PK ID ${INDEXID} file (${PAGEFILE})";
+					
+						FILETOPARSE=${SOURCEDIR}/${SCHEMA_RECOVERY}/${TABLE}.ibd
+						if [ ! -e $FILETOPARSE ]
+						then
+								printf "!!!!! WARNING !!!!\n The file $FILETOPARSE is not found please check the path and try again\n";
+								continue
+						fi
+		
+		#Parsing IBD file for the given table
+		
+						echo "Parsing file $FILETOPARSE";
+						cd $DESTDIR/$SCHEMA_RECOVERY
+						echo "Current dir:`pwd`"
+						echo "Executing:   ${EXECDIR}/stream_parser -f ${SOURCEDIR}/${SCHEMA_RECOVERY}/${TABLE}.ibd"
+													
+						`time ${EXECDIR}/stream_parser -f ${SOURCEDIR}/${SCHEMA_RECOVERY}/${TABLE}.ibd`
+						
+						TOCHANGE=`ls -d page*`;
+						`rm -fr $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}`
+						`mv $DESTDIR/${SCHEMA_RECOVERY}/$TOCHANGE $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}`
+					
+						printf "\n -------------------------- \n"   ;
+						TIMENOW=`date`;
+		#extracting data
+						echo "Starting data extraction ${SCHEMA_RECOVERY}_${TABLE} ${TIMENOW}";
+						
+						echo "${EXECDIR}/c_parser -p ${DESTDIR}/${SCHEMA_RECOVERY} -${MYSQLMODE}${RECOVERYMODE}f $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_INDEX/${PAGEFILE}.page -b $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_TYPE_BLOB/ -t ${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/${schematable} -o $DESTDIR/${SCHEMA_RECOVERY}/DATA_${SCHEMA_RECOVERY}_${TABLE}" 
+						if [ -f $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_INDEX/${PAGEFILE}.page ]
+						then
+								 `time ${EXECDIR}/c_parser  -p ${DESTDIR}/${SCHEMA_RECOVERY} -${MYSQLMODE}${RECOVERYMODE}f $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_INDEX/${PAGEFILE}.page -b $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_TYPE_BLOB/ -t ${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/${schematable} -o $DESTDIR/${SCHEMA_RECOVERY}/DATA_${SCHEMA_RECOVERY}_${TABLE}.tab 1>> ${DESTDIR}/${SCHEMA_RECOVERY}/load_${SCHEMA_RECOVERY}.sql`
+						else
+								 if [ -f ${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/${schematable} ]
+								 then
+											RECLOCALPATH=`pwd`
+											cd $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_INDEX/
+											echo "File page $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_INDEX/${PAGEFILE}.page Not found"
+											echo "Will try to process existing file(s) using the given table definition ${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/${schematable}"
+											#MYCHUNK=0;
+											for FRECOV in `ls -D *.page`;
+											do
+												 echo "processing $FRECOV"
+												 #MYCHUNK=$((MYCHUNK+1));
+												 #`time ${EXECDIR}/c_parser  -p ${DESTDIR}/${SCHEMA_RECOVERY} -${MYSQLMODE}${RECOVERYMODE}f $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_INDEX/${FRECOV} -b $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_TYPE_BLOB/ -t ${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/${schematable} -o $DESTDIR/${SCHEMA_RECOVERY}/DATA_${SCHEMA_RECOVERY}_${TABLE}_C${MYCHUNK}.tab 1>> ${DESTDIR}/${SCHEMA_RECOVERY}/load_${SCHEMA_RECOVERY}.sql`
+												`time ${EXECDIR}/c_parser  -p ${DESTDIR}/${SCHEMA_RECOVERY} -${MYSQLMODE}${RECOVERYMODE}f $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_INDEX/${FRECOV} -b $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_TYPE_BLOB/ -t ${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/${schematable} -o $DESTDIR/${SCHEMA_RECOVERY}/DATA_${SCHEMA_RECOVERY}_${TABLE}.tab 1>> ${DESTDIR}/${SCHEMA_RECOVERY}/load_${SCHEMA_RECOVERY}.sql`
+												break;
+										 done;
+										 cd $RECLOCALPATH;
+									else
+										echo "[ERROR] Table definition not found I cannot process the file \n Page file $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_INDEX/${PAGEFILE}.page "
+										echo "[Error] Table definition -f ${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/${schematable}"
+										exit 1;
+									fi
+									echo "";
+						fi 
+					 
+						
+						TIMENOW=`date`;
 
-                
-                #Read table ID from SYS_TABLE
-                ESCTABLE=${TABLE//_/.\\_};
-                ESCSCHEMA=${SCHEMA//_/.\\_};
-            
-                TABLEID=`cat ${DESTDIR}/ibdata/SYS_TABLES|grep -e "SYS_TABLES.\"${ESCSCHEMA}/${ESCTABLE}\""|sed -e"s/\t/,/g"|awk -F ',' '{print $5}'|head -n 1`;
-                INDEXID=`cat ${DESTDIR}/ibdata/SYS_INDEXES|grep -e "SYS_INDEXES.${TABLEID}"|grep PRIMARY|sed -e"s/\t/,/g"|awk -v r=${TABLEID} -F ',' '{if($4==r){print $5}else{print $4 $5}}'|head -n 1`;
-                PAGEFILE=""
-                printf -v PAGEFILE "%016d" $INDEXID
-#                if [ $VERBOSE -eq 1  ] ; then
-#                  echo "cat ${DESTDIR}/ibdata/SYS_TABLES|grep -e \"SYS_TABLES.\"${ESCSCHEMA}/${ESCTABLE}\"\"|sed -e\"s/\t/,/g\"|awk -F ',' '{print \$5}'"
-#		  echo "cat ${DESTDIR}/ibdata/SYS_INDEXES|grep -e \"SYS_INDEXES.${TABLEID}\"|grep PRIMARY|sed -e\"s/\t/,/g\"|awk -F ',' '{if(\$4 == "${TABLEID}"){print \$5}else{exit 1}}'";
-#                fi
-                echo "Processing TableId $TABLEID with PK ID ${INDEXID} file (${PAGEFILE})";
-                
-                
-                FILETOPARSE=${SOURCEDIR}/${SCHEMA_RECOVERY}/${TABLE}.ibd
-                if [ ! -e $FILETOPARSE ]
-                then
-                    printf "The file $FILETOPARSE is not found please check the path and try again\n";
-                    continue
-                fi
-    
-    #Parsing IBD file for the given table
-    
-                echo "Parsing file $FILETOPARSE";
-                cd $DESTDIR/$SCHEMA_RECOVERY
-                echo "Current dir:`pwd`"
-                echo "Executing:   ${EXECDIR}/stream_parser -f ${SOURCEDIR}/${SCHEMA_RECOVERY}/${TABLE}.ibd"
-                                
-                `time ${EXECDIR}/stream_parser -f ${SOURCEDIR}/${SCHEMA_RECOVERY}/${TABLE}.ibd`
-                
-                TOCHANGE=`ls -d page*`;
-                `rm -fr $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}`
-                `mv $DESTDIR/${SCHEMA_RECOVERY}/$TOCHANGE $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}`
-                
-#                if [ ! -e ${DESTDIR}/${SCHEMA_RECOVERY}/load_${SCHEMA_RECOVERY}.sql ]
-#                then
-#                  echo "Create SQL create file for ${SCHEMA_RECOVERY} \n"
-#		  echo "use ${SCHEMA_RECOVERY} " ${DESTDIR}/${SCHEMA_RECOVERY}/load_${SCHEMA_RECOVERY}.sql
-#                fi
-                
-                printf "\n -------------------------- \n"   ;
-                TIMENOW=`date`;
-    #extracting data
-                echo "Starting data extraction ${SCHEMA_RECOVERY}_${TABLE} ${TIMENOW}";
-                
-                #echo "${EXECDIR}/c_parser -s ${SCHEMA_RECOVERY} -p${DESTDIR}/${SCHEMA_RECOVERY} -6${RECOVERYMODE}f $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_INDEX/${PAGEFILE}.page -b $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_TYPE_BLOB/ -S $CHUNKSIZE -o $DESTDIR/${SCHEMA_RECOVERY}/DATA_${SCHEMA_RECOVERY}_${TABLE}"
-                
-                echo "${EXECDIR}/c_parser -p ${DESTDIR}/${SCHEMA_RECOVERY} -${MYSQLMODE}${RECOVERYMODE}f $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_INDEX/${PAGEFILE}.page -b $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_TYPE_BLOB/ -t ${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/${schematable} -o $DESTDIR/${SCHEMA_RECOVERY}/DATA_${SCHEMA_RECOVERY}_${TABLE}" 
-               `time ${EXECDIR}/c_parser  -p ${DESTDIR}/${SCHEMA_RECOVERY} -${MYSQLMODE}${RECOVERYMODE}f $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_INDEX/${PAGEFILE}.page -b $DESTDIR/${SCHEMA_RECOVERY}/${SCHEMA_RECOVERY}_${TABLE}/FIL_PAGE_TYPE_BLOB/ -t ${DESTDIR}/${SCHEMA_RECOVERY}/tablesdef/${schematable} -o $DESTDIR/${SCHEMA_RECOVERY}/DATA_${SCHEMA_RECOVERY}_${TABLE}.tab 1>> ${DESTDIR}/${SCHEMA_RECOVERY}/load_${SCHEMA_RECOVERY}.sql`
-                
-                TIMENOW=`date`;
-                echo "Data extraction ENDS ${SCHEMA_RECOVERY}_${TABLE} ${TIMENOW}";
-                
-            printf "\n -------------------------- \n\n" 
-    
+						echo "Data extraction ENDS ${SCHEMA_RECOVERY}_${TABLE} ${TIMENOW}";
+						
+						printf "\n -------------------------- \n\n" 
         done;
-        
     fi
     echo "###################################################"
     echo "Process ENDs ${TIMENOW}"
