@@ -689,6 +689,7 @@ done
 					 
 						
 						TIMENOW=`date`;
+
 						echo "Data extraction ENDS ${SCHEMA_RECOVERY}_${TABLE} ${TIMENOW}";
 						
 						printf "\n -------------------------- \n\n" 
